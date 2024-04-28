@@ -1,9 +1,9 @@
 package main
 
-import http_network "tiny_chain/network/http"
+import "tiny_chain/network"
 
 // Add your code here
 
 func main() {
-	http_network.InitSever()
+	network.InitSever()
 }

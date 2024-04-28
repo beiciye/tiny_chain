@@ -1,4 +1,4 @@
-package block
+package blockchain
 
 import (
 	"log"
@@ -21,6 +21,7 @@ func getDifficulty() int {
 }
 
 func getAdjustedDifficulty() int {
+	blockchain := GetBlockChain()
 	if len(blockchain) <= DIFFICULTY_ADJUSTMENT_INTERVAL {
 		return initialDifficulty
 	}
@@ -47,11 +48,13 @@ func MineBlock() *Block {
 		hash := nextBlock.CalculateHash()
 		if matchProofOfWork(hash) {
 			log.Default().Printf("Found hash: %s Nonce: %d", hash, nextBlock.Nonce)
-			blockchain = append(blockchain, nextBlock)
 			break
 		}
 		nextBlock.Nonce = nextBlock.Nonce + 1
 	}
+	nextBlock.Hash = nextBlock.CalculateHash()
+	blockchainAddBlock(nextBlock)
+
 	return nextBlock
 }
 

@@ -1,4 +1,4 @@
-package block
+package blockchain
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 )
 
 type Block struct {
-	Index      int64
+	Index      int
 	Timestamp  int64
 	Data       []byte
 	Hash       string
@@ -18,9 +18,17 @@ type Block struct {
 	Nonce      int64
 }
 
-var firstBlock = newBlock(0, []byte("First block"), "", initialDifficulty, int64(0))
+var firstBlock = &Block{
+	Index:      0,
+	Data:       []byte("First block"),
+	PrevHash:   "",
+	Timestamp:  1714154017,
+	Difficulty: initialDifficulty,
+	Hash:       "4653dbe9183c6ed83761da0dac13410b154c4146217d7a2a6708e02868b4fe2d",
+	Nonce:      0,
+}
 
-var blockchain = []*Block{firstBlock}
+var chains = []*Block{firstBlock}
 
 func (b *Block) CalculateHash() string {
 	str := fmt.Sprintf("%d%d%s%s%d%d", b.Index, b.Timestamp, string(b.Data), b.PrevHash, b.Difficulty, b.Nonce)
@@ -66,19 +74,25 @@ func ValidateBlockChain(blockchain []*Block) bool {
 	return true
 }
 
-func ReplaceChain(newChain []*Block) {
-	if (len(newChain) > len(blockchain)) && ValidateBlockChain(newChain) {
-		blockchain = newChain
-		// Todo: publish to other nodes
-		// broadcastLatest()
+func ReplaceChain(newBlocks []*Block) {
+	if (len(newBlocks) > len(chains)) && ValidateBlockChain(newBlocks) {
+		fmt.Println("Replacing blockchain")
+		chains = newBlocks
 	}
 }
 
-func GetLatestBlock() *Block {
-	return blockchain[len(blockchain)-1]
+func blockchainAddBlock(nextBlock *Block) {
+	if nextBlock.IsValid(GetLatestBlock()) {
+		chains = append(chains, nextBlock)
+	}
+
 }
 
-func newBlock(index int64, data []byte, prevHash string, difficulty int, nonce int64) *Block {
+func GetLatestBlock() *Block {
+	return chains[len(chains)-1]
+}
+
+func newBlock(index int, data []byte, prevHash string, difficulty int, nonce int64) *Block {
 	b := &Block{
 		Index:      index,
 		Data:       data,
@@ -92,5 +106,5 @@ func newBlock(index int64, data []byte, prevHash string, difficulty int, nonce i
 }
 
 func GetBlockChain() []*Block {
-	return blockchain
+	return chains
 }
