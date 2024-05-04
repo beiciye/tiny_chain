@@ -13,7 +13,7 @@ import (
 	"tiny_chain/blockchain"
 )
 
-var COINBASE_AMOUNT = 50
+var coinbaseAmount = 50
 
 type TransationInput struct {
 	TxOutputId string
@@ -208,7 +208,7 @@ func (tx *Transation) ValidateCoinbaseTx(blockIndex int) bool {
 		return false
 	}
 
-	if tx.Output[0].Amount != COINBASE_AMOUNT {
+	if tx.Output[0].Amount != coinbaseAmount {
 		return false
 	}
 
@@ -219,7 +219,10 @@ func CreateCoinbaseTx(address string, blockIndex int) *Transation {
 	// Add your code here
 
 	txin := &TransationInput{TxOutputId: "", TxOutIndex: blockIndex, Siguature: ""}
-	txout := &TransationOutput{Address: address, Amount: COINBASE_AMOUNT}
+	if (blockIndex % 10) == 0 {
+		coinbaseAmount = coinbaseAmount / 2
+	}
+	txout := &TransationOutput{Address: address, Amount: coinbaseAmount}
 	tx := &Transation{Id: "", Output: []*TransationOutput{txout}, Input: []*TransationInput{txin}}
 	tx.Id = tx.GetTransationId()
 
