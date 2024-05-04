@@ -4,6 +4,54 @@
 ## 运行
 
 
+```
+// 运行两个节点
+go run main.go --port 12001
+go run main.go --port 12002
+
+
+//获取节点区块数据
+
+curl --location --request GET 'localhost:12001/blockchain'
+curl --location --request GET 'localhost:12002/blockchain'
+
+// 添加对等节点
+
+curl --location --request POST 'localhost:12001/addPeer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "addr": "http://localhost:12002"
+}'
+
+curl --location --request POST 'localhost:12002/addPeer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "addr": "http://localhost:12001"
+}'
+
+
+// 挖矿
+curl --location --request GET 'localhost:12001/mineBlock'
+
+// 查看节1的钱包余额
+curl --location --request GET 'localhost:12001/getMyBalance'
+
+// 节点1的钱包转账给节点2的钱包
+
+curl --location --request GET 'localhost:12002/performTransaction' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "to": "", // 地址是节点2的钱包地址，节点2启动后会打印出来
+    "amount": 10
+}'
+
+// 查看钱包余额
+curl --location --request GET 'localhost:12001/getMyBalance'
+curl --location --request GET 'localhost:12002/getMyBalance'
+
+```
+
+
 
 ## 介绍
 
